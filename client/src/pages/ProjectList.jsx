@@ -6,7 +6,7 @@ const ProjectList = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/projects")
+    fetch("https://pacta-canada-2.onrender.com/api/projects")
       .then((res) => res.json())
       .then((data) => {
         setProjects(data);

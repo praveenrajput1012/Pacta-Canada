@@ -23,7 +23,7 @@ const CreateProject = () => {
       return;
     }
     try {
-      const res = await fetch("http://localhost:5000/api/projects", {
+      const res = await fetch("https://pacta-canada-2.onrender.com/api/projects", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -8,7 +8,7 @@ const Profile = () => {
   // Fetch user info on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("http://localhost:5000/api/users/me", {
+    fetch("https://pacta-canada-2.onrender.com/api/users/me", {
       headers: { Authorization: "Bearer " + token },
     })
       .then((res) => res.json())
@@ -28,7 +28,7 @@ const Profile = () => {
     setMessage("");
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch("http://localhost:5000/api/users/me", {
+      const res = await fetch("https://pacta-canada-2.onrender.com/api/users/me", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

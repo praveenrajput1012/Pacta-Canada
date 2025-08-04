@@ -9,7 +9,7 @@ const EditProject = () => {
 
   // Fetch the current project data to pre-fill the form
   useEffect(() => {
-    fetch(`http://localhost:5000/api/projects/${id}`)
+    fetch(`https://pacta-canada-2.onrender.com/api/projects/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setForm({
@@ -29,7 +29,7 @@ const EditProject = () => {
     setMessage("");
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
+      const res = await fetch(`https://pacta-canada-2.onrender.com/api/projects/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

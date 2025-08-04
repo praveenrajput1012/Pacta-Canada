@@ -15,7 +15,7 @@ const ProjectDetail = () => {
 
   // Fetch project details
   useEffect(() => {
-    fetch(`http://localhost:5000/api/projects/${id}`)
+    fetch(`https://pacta-canada-2.onrender.com/api/projects/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setProject(data);
@@ -26,7 +26,7 @@ const ProjectDetail = () => {
 
   // Fetch comments
   useEffect(() => {
-    fetch(`http://localhost:5000/api/comments/${id}`)
+    fetch(`https://pacta-canada-2.onrender.com/api/comments/${id}`)
       .then((res) => res.json())
       .then((data) => setComments(data))
       .catch(() => setComments([]));
@@ -46,7 +46,7 @@ const [editingCommentText, setEditingCommentText] = useState("");
       return;
     }
     try {
-      const res = await fetch(`http://localhost:5000/api/comments/${id}`, {
+      const res = await fetch(`https://pacta-canada-2.onrender.com/api/comments/${id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -59,7 +59,7 @@ const [editingCommentText, setEditingCommentText] = useState("");
         setCommentText("");
         setCommentMsg("Comment added!");
         // Refresh comments
-        fetch(`http://localhost:5000/api/comments/${id}`)
+        fetch(`https://pacta-canada-2.onrender.com/api/comments/${id}`)
           .then((res) => res.json())
           .then((data) => setComments(data));
       } else {
@@ -75,7 +75,7 @@ const [editingCommentText, setEditingCommentText] = useState("");
     if (!window.confirm("Are you sure you want to delete this project?")) return;
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(`http://localhost:5000/api/projects/${project._id}`, {
+      const res = await fetch(`https://pacta-canada-2.onrender.com/api/projects/${project._id}`, {
         method: "DELETE",
         headers: { Authorization: "Bearer " + token },
       });
@@ -155,7 +155,7 @@ const [editingCommentText, setEditingCommentText] = useState("");
                 onClick={async () => {
                   const token = localStorage.getItem("token");
                   try {
-                    const res = await fetch(`http://localhost:5000/api/comments/${comment._id}`, {
+                    const res = await fetch(`https://pacta-canada-2.onrender.com/api/comments/${comment._id}`, {
                       method: "PUT",
                       headers: {
                         "Content-Type": "application/json",
@@ -166,7 +166,7 @@ const [editingCommentText, setEditingCommentText] = useState("");
                     if (res.ok) {
                       setEditingCommentId(null);
                       // Refresh comments
-                      fetch(`http://localhost:5000/api/comments/${id}`)
+                      fetch(`https://pacta-canada-2.onrender.com/api/comments/${id}`)
                         .then((res) => res.json())
                         .then((data) => setComments(data));
                     }
@@ -203,13 +203,13 @@ const [editingCommentText, setEditingCommentText] = useState("");
                       if (window.confirm("Delete this comment?")) {
                         const token = localStorage.getItem("token");
                         try {
-                          const res = await fetch(`http://localhost:5000/api/comments/${comment._id}`, {
+                          const res = await fetch(`https://pacta-canada-2.onrender.com/api/comments/${comment._id}`, {
                             method: "DELETE",
                             headers: { Authorization: "Bearer " + token },
                           });
                           if (res.ok) {
                             // Refresh comments
-                            fetch(`http://localhost:5000/api/comments/${id}`)
+                            fetch(`https://pacta-canada-2.onrender.com/api/comments/${id}`)
                               .then((res) => res.json())
                               .then((data) => setComments(data));
                           }
