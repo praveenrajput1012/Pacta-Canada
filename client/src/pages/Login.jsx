@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API from "../api/axios";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -14,25 +15,19 @@ const Login = () => {
     e.preventDefault();
     setMessage("");
     try {
-      const res = await fetch("https://pacta-canada-2.onrender.com/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        // Save token and user info to localStorage
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        setMessage("Login successful! Redirecting...");
-        setTimeout(() => {
-          navigate("/"); // Redirect to home or dashboard
-        }, 1000);
-      } else {
-        setMessage(data.message || "Login failed.");
-      }
+      const res = await API.post("/api/auth/login", form);
+      const data = res.data;
+
+      // Save token and user info to localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setMessage("Login successful! Redirecting...");
+      setTimeout(() => {
+        navigate("/"); // Redirect to home or dashboard
+      }, 1000);
     } catch (err) {
-      setMessage("Login failed. Server error.");
+      console.error(err);
+      setMessage(err.response?.data?.message || "Login failed. Server error.");
     }
   };
 

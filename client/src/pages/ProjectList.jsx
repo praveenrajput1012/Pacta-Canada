@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import API from "../api/axios";
 
 const ProjectList = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("https://pacta-canada-2.onrender.com/api/projects")
-      .then((res) => res.json())
-      .then((data) => {
-        setProjects(data);
+    API.get("/api/projects")
+      .then((res) => {
+        setProjects(res.data);
         setLoading(false);
       })
       .catch(() => setLoading(false));

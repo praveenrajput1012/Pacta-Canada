@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API from "../api/axios";
 
 const CreateProject = () => {
   const [form, setForm] = useState({
@@ -22,35 +23,41 @@ const CreateProject = () => {
       setMessage("You must be logged in to create a project.");
       return;
     }
+
     try {
-      const res = await fetch("https://pacta-canada-2.onrender.com/api/projects", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({
+      const res = await API.post(
+        "/api/projects",
+        {
           title: form.title,
           description: form.description,
           links: form.links.split(",").map((link) => link.trim()),
-        }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setMessage("Project created!");
-        setTimeout(() => {
-          navigate("/projects"); // Redirect to project list
-        }, 1000);
-      } else {
-        setMessage(data.message || "Project creation failed.");
-      }
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setMessage("Project created!");
+      setTimeout(() => {
+        navigate("/projects"); // Redirect to project list
+      }, 1000);
     } catch (err) {
-      setMessage("Project creation failed. Server error.");
+      setMessage(err.response?.data?.message || "Project creation failed. Server error.");
     }
   };
 
   return (
-    <div style={{ maxWidth: 500, margin: "40px auto", padding: 24, border: "1px solid #eee", borderRadius: 8 }}>
+    <div
+      style={{
+        maxWidth: 500,
+        margin: "40px auto",
+        padding: 24,
+        border: "1px solid #eee",
+        borderRadius: 8,
+      }}
+    >
       <h2>Create Project</h2>
       {message && <div style={{ marginBottom: 12, color: "blue" }}>{message}</div>}
       <form onSubmit={handleSubmit}>
@@ -84,7 +91,17 @@ const CreateProject = () => {
             style={{ width: "100%", marginBottom: 16 }}
           />
         </div>
-        <button type="submit" style={{ width: "100%", padding: 8, background: "#1976d2", color: "#fff", border: "none", borderRadius: 4 }}>
+        <button
+          type="submit"
+          style={{
+            width: "100%",
+            padding: 8,
+            background: "#1976d2",
+            color: "#fff",
+            border: "none",
+            borderRadius: 4,
+          }}
+        >
           Create Project
         </button>
       </form>

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import API from "../api/axios";
 
 const Signup = () => {
   const [form, setForm] = useState({
@@ -19,20 +20,13 @@ const Signup = () => {
     e.preventDefault();
     setMessage("");
     try {
-      const res = await fetch("https://pacta-canada-2.onrender.com/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setMessage("Signup successful! You can now log in.");
-        setForm({ username: "", email: "", password: "", role: "user" });
-      } else {
-        setMessage(data.message || "Signup failed.");
-      }
+      const res = await API.post("/api/auth/signup", form);
+      const data = res.data;
+
+      setMessage("Signup successful! You can now log in.");
+      setForm({ username: "", email: "", password: "", role: "user" });
     } catch (err) {
-      setMessage("Signup failed. Server error.");
+      setMessage(err.response?.data?.message || "Signup failed. Server error.");
     }
   };
 

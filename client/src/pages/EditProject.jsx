@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import API from "../api/axios";
 
 const EditProject = () => {
   const { id } = useParams();
@@ -9,15 +10,20 @@ const EditProject = () => {
 
   // Fetch the current project data to pre-fill the form
   useEffect(() => {
-    fetch(`https://pacta-canada-2.onrender.com/api/projects/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchProject = async () => {
+      try {
+        const res = await API.get(`/api/projects/${id}`);
+        const data = res.data;
         setForm({
           title: data.title,
           description: data.description,
           links: data.links ? data.links.join(", ") : "",
         });
-      });
+      } catch (error) {
+        setMessage("Failed to fetch project.");
+      }
+    };
+    fetchProject();
   }, [id]);
 
   const handleChange = (e) => {
@@ -28,34 +34,46 @@ const EditProject = () => {
     e.preventDefault();
     setMessage("");
     const token = localStorage.getItem("token");
+
+    if (!token) {
+      setMessage("Unauthorized. Please log in.");
+      return;
+    }
+
     try {
-      const res = await fetch(`https://pacta-canada-2.onrender.com/api/projects/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify({
+      await API.put(
+        `/api/projects/${id}`,
+        {
           title: form.title,
           description: form.description,
           links: form.links.split(",").map((link) => link.trim()),
-        }),
-      });
-      if (res.ok) {
-        setMessage("Project updated!");
-        setTimeout(() => {
-          navigate(`/projects/${id}`);
-        }, 1000);
-      } else {
-        setMessage("Failed to update project.");
-      }
-    } catch {
-      setMessage("Server error.");
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setMessage("Project updated!");
+      setTimeout(() => {
+        navigate(`/projects/${id}`);
+      }, 1000);
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Failed to update project.");
     }
   };
 
   return (
-    <div style={{ maxWidth: 500, margin: "40px auto", padding: 24, border: "1px solid #eee", borderRadius: 8 }}>
+    <div
+      style={{
+        maxWidth: 500,
+        margin: "40px auto",
+        padding: 24,
+        border: "1px solid #eee",
+        borderRadius: 8,
+      }}
+    >
       <h2>Edit Project</h2>
       {message && <div style={{ marginBottom: 12, color: "blue" }}>{message}</div>}
       <form onSubmit={handleSubmit}>
@@ -88,7 +106,17 @@ const EditProject = () => {
             style={{ width: "100%", marginBottom: 16 }}
           />
         </div>
-        <button type="submit" style={{ width: "100%", padding: 8, background: "#1976d2", color: "#fff", border: "none", borderRadius: 4 }}>
+        <button
+          type="submit"
+          style={{
+            width: "100%",
+            padding: 8,
+            background: "#1976d2",
+            color: "#fff",
+            border: "none",
+            borderRadius: 4,
+          }}
+        >
           Update Project
         </button>
       </form>

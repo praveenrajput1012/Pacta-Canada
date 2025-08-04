@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import API from "../api/axios";
 
 const Profile = () => {
   const [form, setForm] = useState({ username: "", email: "" });
@@ -8,15 +9,22 @@ const Profile = () => {
   // Fetch user info on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
-    fetch("https://pacta-canada-2.onrender.com/api/users/me", {
-      headers: { Authorization: "Bearer " + token },
+    API.get("/api/users/me", {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
     })
-      .then((res) => res.json())
-      .then((data) => {
-        setForm({ username: data.username, email: data.email });
+      .then((res) => {
+        setForm({
+          username: res.data.username,
+          email: res.data.email,
+        });
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error("Failed to fetch user profile", err);
+        setLoading(false);
+      });
   }, []);
 
   const handleChange = (e) => {
@@ -27,32 +35,43 @@ const Profile = () => {
     e.preventDefault();
     setMessage("");
     const token = localStorage.getItem("token");
+
     try {
-      const res = await fetch("https://pacta-canada-2.onrender.com/api/users/me", {
-        method: "PUT",
+      await API.put("/api/users/me", form, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: "Bearer " + token,
         },
-        body: JSON.stringify(form),
       });
-      if (res.ok) {
-        setMessage("Profile updated!");
-      } else {
-        const data = await res.json();
-        setMessage(data.message || "Failed to update profile.");
-      }
-    } catch {
-      setMessage("Server error.");
+      setMessage("Profile updated!");
+    } catch (error) {
+      console.error(error);
+      const msg =
+        error.response?.data?.message || "Failed to update profile.";
+      setMessage(msg);
     }
   };
 
-  if (loading) return <div style={{ textAlign: "center", marginTop: 40 }}>Loading profile...</div>;
+  if (loading)
+    return (
+      <div style={{ textAlign: "center", marginTop: 40 }}>
+        Loading profile...
+      </div>
+    );
 
   return (
-    <div style={{ maxWidth: 400, margin: "40px auto", padding: 24, border: "1px solid #eee", borderRadius: 8 }}>
+    <div
+      style={{
+        maxWidth: 400,
+        margin: "40px auto",
+        padding: 24,
+        border: "1px solid #eee",
+        borderRadius: 8,
+      }}
+    >
       <h2>Your Profile</h2>
-      {message && <div style={{ marginBottom: 12, color: "blue" }}>{message}</div>}
+      {message && (
+        <div style={{ marginBottom: 12, color: "blue" }}>{message}</div>
+      )}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Username:</label>
@@ -75,7 +94,17 @@ const Profile = () => {
             type="email"
           />
         </div>
-        <button type="submit" style={{ width: "100%", padding: 8, background: "#1976d2", color: "#fff", border: "none", borderRadius: 4 }}>
+        <button
+          type="submit"
+          style={{
+            width: "100%",
+            padding: 8,
+            background: "#1976d2",
+            color: "#fff",
+            border: "none",
+            borderRadius: 4,
+          }}
+        >
           Update Profile
         </button>
       </form>
